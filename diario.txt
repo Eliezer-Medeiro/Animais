@@ -1,0 +1,74 @@
+============================================================
+            DIA 1
+============================================================
+Comecei a desenvolver um site para publicar fotos dos meus animais,
+como forma de treinar programação web com Python.
+
+Escolhi usar o framework Flask. Organizei a estrutura do projeto com
+as seguintes pastas e arquivos:
+
+- `run.py`: arquivo principal para rodar o app (com debug ativado).
+- `.flaskenv`: tentei usar para configurar o ambiente, mas não funcionou.
+  Ativei o debug diretamente no `run.py`.
+- `__init__.py`: inicializa o app Flask.
+- `routes.py`: define as rotas (páginas) do site.
+- `templates/` com:
+  - `home.html`: página inicial.
+  - `adicionar.html`: página com formulário para adicionar animais.
+
+O objetivo do primeiro dia foi testar se o Flask estava funcionando 
+corretamente, organizar a estrutura e preparar o ambiente.
+
+============================================================
+            DIA 2
+============================================================
+Comecei a montar a página `adicionar.html`. Criei um formulário com os campos:
+
+- Nome  
+- Raça  
+- Espécie  
+- Data  
+- Descrição  
+- Link da foto  
+
+O formulário usa o método `POST` e o Bootstrap para deixar o visual melhor.
+
+No backend, importei `request` e `redirect`. Por enquanto, os dados enviados 
+pelo formulário são apenas exibidos no terminal e, depois disso, o usuário é 
+redirecionado para a página inicial.
+
+============================================================
+            DIA 3
+============================================================
+Comecei a criar o banco de dados. O escolhido foi o SQLite3,
+pois já vem com o Python e não precisa instalar nada.
+
+Criei a tabela `animais`, com os campos: nome, raça, espécie,
+ data, descrição e link da foto.
+
+Liguei o banco de dados ao backend, importando as bibliotecas 
+`sqlite3` e `os`.
+
+Fiz com que o `home.html` recebesse os dados do banco e mostrasse a foto
+através do link que está no banco, junto com as informações da imagem.
+Também criei um botão para adicionar mais fotos.
+
+No `adicionar.html`, configurei para que as informações recebidas fossem 
+enviadas diretamente ao banco de dados, e a página inicial já mostrasse 
+automaticamente as novas fotos publicadas.
+
+### Ideias a curto prazo:
+- Implementar filtros por tipo de espécie, raça (dentro da espécie),
+nome, idade — filtros básicos.
+
+### Ideias a longo prazo:
+- Criar perfis de usuário, para que cada pessoa possa publicar as fotos dos seus próprios bichos;
+- Permitir que as pessoas pesquisem perfis públicos e curtam fotos;
+- Não haverá chat, pois não é o objetivo do projeto.
+
+Inicialmente, pensei em não ter perfis — apenas o admin (eu) poderia mandar fotos,
+e os visitantes apenas visualizariam. Mas quero usar esse projeto como treino para ir
+aumentando a complexidade aos poucos.
+
+Vou terminar primeiro a versão básica, subir na web e, depois disso, 
+ir melhorando aos poucos. A ideia é fazer um MVP funcional primeiro.

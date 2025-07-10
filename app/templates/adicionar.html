@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Adicionar Animal</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"rel="stylesheet">
+</head>
+<body class="container mt-5">
+	<h2>Cadastro de Animal</h2>
+	<form method="POST" action="/adicionar">
+		<div class="mb-3">
+			<label>Nome:</label>
+			<input class="form-control" type="text" name="nome" required>
+		</div>
+		<div class="mb-3">
+			<label>Espécie:</label>
+			<input class="form-control" type="text" name="especie" required>
+		</div>
+		<div class="mb-3">
+			<label>Raça:</label>
+			<input class="form-control" type="text" name="raca">
+		</div>
+		<div class="mb-3">
+			<label>Nascimento:</label>
+			<input class="form-control" type="text" name="nascimento" placeholder="AAAA/MM/DD">
+		</div>
+		<div class="mb-3">
+			<label>Descrição:</label>
+			<textarea class="form-control" name="descricao" rows="3"></textarea>
+		</div>
+		<div class="mb-3">
+			<label>Foto (link da imagem):</label>
+			<input class="form-control" type="text" name="foto" required>
+		</div>
+		<button class="btn btn-success" type="submit">Salvar</button>
+		<a class="btn btn-secondary" href="/"></a>
+	</form>
+</body>
+</html>
