@@ -49,7 +49,7 @@
 		<div class="mb-4">
 			<a href="/" class="btn btn-secondary btn-sm">Todos</a>
 			{% for nome in nomes %}
-				<a href="{{ url_for('filtro_po_nome', nome=nome) }}" class="btn btn-primary btn-sm">{{ nome }}</a>
+				<a href="{{ url_for('filtro_por_nome', nome=nome) }}" class="btn btn-primary btn-sm">{{ nome }}</a>
 			{% endfor %}
 		</div>
 	{% endif %}

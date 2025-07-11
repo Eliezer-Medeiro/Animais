@@ -26,18 +26,18 @@ def homepage():
 @app.route("/fltro/<nome>")
 def filtro_por_nome(nome):
 	conn = sqlite3.connect(CAMINHO_BANCO)
-	cursor = conn.cursor
+	cursor = conn.cursor()
 
 	cursor.execute("SELECT * FROM animais Where nome = ?", (nome,))
 	animais = cursor.fetchall()
 
 	cursor.execute("SELECT DISTINCT nome FROM animais")
 	nomes = [row[0] for row in cursor.fetchall()]
-	conn.close
+	conn.close()
 
 	return render_template("home.html", animais=animais, nomes=nomes)
 
-	
+
 
 
 
