@@ -14,8 +14,32 @@ def homepage():
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM animais")
     animais = cursor.fetchall()
+    
+    cursor.execute("SELECT DISTINCT nome FROM animais")
+    nomes = [row[0] for row in cursor.fetchall()]
     conn.close()
-    return render_template("home.html", animais=animais)
+
+    return render_template("home.html", animais=animais, nomes=nomes)
+
+
+# Filtro por nomes
+@app.route("/fltro/<nome>")
+def filtro_por_nome(nome):
+	conn = sqlite3.connect(CAMINHO_BANCO)
+	cursor = conn.cursor
+
+	cursor.execute("SELECT * FROM animais Where nome = ?", (nome,))
+	animais = cursor.fetchall()
+
+	cursor.execute("SELECT DISTINCT nome FROM animais")
+	nomes = [row[0] for row in cursor.fetchall()]
+	conn.close
+
+	return render_template("home.html", animais=animais, nomes=nomes)
+
+	
+
+
 
 # pagina para add animal
 @app.route("/adicionar", methods=["GET", "POST"])
