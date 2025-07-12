@@ -12,10 +12,10 @@ CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'animais.db')
 def homepage():
     conn = sqlite3.connect(CAMINHO_BANCO)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM animais")
+    cursor.execute("SELECT * FROM animais WHERE arquivado = 0")
     animais = cursor.fetchall()
     
-    cursor.execute("SELECT DISTINCT nome FROM animais")
+    cursor.execute("SELECT DISTINCT nome FROM animais WHERE arquivado = 0")
     nomes = [row[0] for row in cursor.fetchall()]
     conn.close()
 
@@ -28,10 +28,10 @@ def filtro_por_nome(nome):
 	conn = sqlite3.connect(CAMINHO_BANCO)
 	cursor = conn.cursor()
 
-	cursor.execute("SELECT * FROM animais Where nome = ?", (nome,))
+	cursor.execute("SELECT * FROM animais Where nome = ? AND arquivado = 0", (nome,))
 	animais = cursor.fetchall()
 
-	cursor.execute("SELECT DISTINCT nome FROM animais")
+	cursor.execute("SELECT DISTINCT nome FROM animais WHERE arquivado = 0")
 	nomes = [row[0] for row in cursor.fetchall()]
 	conn.close()
 
@@ -70,3 +70,40 @@ def adicionar():
 		return redirect("/")
 
 	return render_template("adicionar.html")
+
+
+@app.route("/arquivados")
+def ver_arquivados():
+	conn = sqlite3.connect(CAMINHO_BANCO)
+	cursor = conn.cursor()
+	cursor.execute("SELECT * FROM animais WHERE arquivado = 1")
+	animais = cursor.fetchall()
+	conn.close()
+	return render_template("arquivados.html", animais=animais)
+
+@app.route("/arquivar/<int:id>")
+def arquivar(id):
+    conn = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE animais SET arquivado = 1 WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return redirect("/")
+
+@app.route("/desarquivar/<int:id>")
+def desarquivar(id):
+    conn = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE animais SET arquivado = 0 WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return redirect("/arquivados")
+
+@app.route("/excluir/<int:id>")
+def excluir(id):
+    conn = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM animais WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    return redirect("/arquivados")

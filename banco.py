@@ -23,8 +23,7 @@ def criar_banco():
 
 if __name__ == "__main__":
 	criar_banco()
-	print("Banco criado com sucesso!")
-"""
+
 import sqlite3
 conn = sqlite3.connect("animais.db")
 cursor = conn.cursor()
@@ -33,3 +32,10 @@ conn.commit()
 cursor.execute("SELECT * FROM animais")
 print(cursor.fetchall())
 conn.close()
+"""
+
+import sqlite3
+conn = sqlite3.connect("animais.db")
+cursor = conn.cursor()
+cursor.execute("ALTER TABLE animais ADD COLUMN arquivado INTERGER default 0;")
+conn.commit()
