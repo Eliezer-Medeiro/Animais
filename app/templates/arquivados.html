@@ -69,8 +69,10 @@
 					<div class="card-animal border rounded shadow-sm">
 						
 						<div class="opcoes-hover">
-							<a href="{{ url_for('desarquivar', id=animal[0]) }}" class="btn btn-success btn-sm">Desarquivar</a>
-							<a href="{{ url_for('excluir', id=animal[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este animal?');">Excluir</a>
+							{% if session["usuario_id"] == animal[7] %}
+								<a href="{{ url_for('desarquivar', id=animal[0]) }}" class="btn btn-success btn-sm">Desarquivar</a>
+								<a href="{{ url_for('excluir', id=animal[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este animal?');">Excluir</a>
+							{% endif %}
 						</div>
 
 						<img src="{{ animal[6] }}" alt="Foto do animal {{ animal[1] }}">
