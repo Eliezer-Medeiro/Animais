@@ -60,7 +60,7 @@
 	<div class="container py-4">
 		<h1 class="mb-4">Animais Arquivados</h1>
 
-		<a href="{{ url_for('homepage') }}" class="btn btn-secondary mb-4">← Voltar para a página inicial</a>
+		<a href="{{ url_for('perfil', apelido=session['usuario_apelido']) }}" class="btn btn-secondary mb-4">← Voltar para a página inicial</a>
 		
 		{% if animais %}
 			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">

@@ -1,5 +1,5 @@
 from app import app
-from flask import render_template, url_for, request, redirect, session, flash
+from flask import render_template, url_for, request, redirect, session, flash, make_response
 import sqlite3
 import os
 
@@ -10,16 +10,35 @@ CAMINHO_BANCO = os.path.join(os.path.dirname(__file__), '..', 'animais.db')
 # Página inicial
 @app.route("/", methods=["GET", "POST"])
 def homepage():
+    """
+    Renderiza a página inicial com a galeria de animais.
+    Esta função agora inclui cabeçalhos para desativar o cache do navegador,
+    garantindo que o status de login/logout seja sempre atualizado.
+    """
     conn = sqlite3.connect(CAMINHO_BANCO)
     cursor = conn.cursor()
+    
+    # Busca todos os animais que não estão arquivados
     cursor.execute("SELECT * FROM animais WHERE arquivado = 0")
     animais = cursor.fetchall()
 
+    # Busca os nomes distintos para os botões de filtro
     cursor.execute("SELECT DISTINCT nome FROM animais WHERE arquivado = 0")
     nomes = [row[0] for row in cursor.fetchall()]
+    
     conn.close()
 
-    return render_template("home.html", animais=animais, nomes=nomes)
+    # 1. Renderiza o template como de costume
+    # 2. Usa make_response para criar um objeto de resposta que pode ser modificado
+    resposta = make_response(render_template("home.html", animais=animais, nomes=nomes))
+
+    # 3. Adiciona os cabeçalhos HTTP à resposta para proibir o cache
+    resposta.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    resposta.headers['Pragma'] = 'no-cache'
+    resposta.headers['Expires'] = '0'
+
+    # 4. Retorna a resposta final para o navegador
+    return resposta
 
 
 # Filtro por nome
@@ -73,27 +92,19 @@ def login():
 
         conn = sqlite3.connect(CAMINHO_BANCO)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, nome FROM usuarios WHERE email = ? AND senha = ?", (email, senha))
+        cursor.execute("SELECT id, nome, apelido FROM usuarios WHERE email = ? AND senha = ?", (email, senha))
         usuario = cursor.fetchone()
         conn.close()
 
         if usuario:
             session["usuario_id"] = usuario[0]
             session["usuario_nome"] = usuario[1]
-
-            conn = sqlite3.connect(CAMINHO_BANCO)
-            cursor = conn.cursor()
-            cursor.execute("SELECT apelido FROM usuarios WHERE id = ?", (usuario[0],))
-            apelido = cursor.fetchone()[0]
-            conn.close()
-
-            return redirect(f"/perfil/{apelido}")
-
+            session["usuario_apelido"] = usuario[2]
+            return redirect(f"/perfil/{usuario[2]}")
         else:
-            flash("Login inválido.")
+            flash("Login inválido. Verifique seu e-mail e senha.")
 
     return render_template("login.html")
-
 
 
 # Logout
@@ -134,12 +145,16 @@ def adicionar():
 # Ver arquivados
 @app.route("/arquivados")
 def ver_arquivados():
+    if "usuario_id" not in session:
+        return redirect("/login")
+
     conn = sqlite3.connect(CAMINHO_BANCO)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM animais WHERE arquivado = 1")
+    cursor.execute("SELECT * FROM animais WHERE arquivado = 1 AND usuario_id = ?", (session["usuario_id"],))
     animais = cursor.fetchall()
     conn.close()
     return render_template("arquivados.html", animais=animais)
+
 
 
 # Arquivar animal (só dono)
@@ -222,3 +237,14 @@ def perfil(apelido):
 
     return render_template("home.html", animais=animais, nomes=[], perfil_nome=apelido, perfil_apelido=apelido)
 
+
+
+@app.route("/explorar")
+def explorar():
+    conn = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM animais WHERE arquivado = 0 AND publica = 1")
+    animais = cursor.fetchall()
+    conn.close()
+
+    return render_template("explorar.html", animais=animais)

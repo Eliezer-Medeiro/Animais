@@ -1,73 +1,116 @@
-#script para criar o banco
-"""
-import sqlite3
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeria dos Meus Animais</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilo para o contêiner do card do animal */
+        .card-animal {
+            position: relative; /* Necessário para posicionar elementos filhos de forma absoluta */
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
 
-def criar_banco():
-	conn = sqlite3.connect('animais.db')
-	cursor = conn.cursor()
-	cursor.execute('''
-		CREATE TABLE IF NOT EXISTS animais(
-			id INTEGER PRIMARY KEY AUTOINCREMENT, 
-			nome TEXT NOT NULL,
-			especie TEXT NOT NULL,
-			raca TEXT,
-			nascimento TEXT,
-			descricao TEXT,
-			foto TEXT
-		)
-	''')
+        .card-animal img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s;
+        }
 
-	conn.commit()
-	conn.close()
+        /* Efeito de zoom na imagem ao passar o mouse */
+        .card-animal:hover img {
+            transform: scale(1.05);
+        }
 
+        /* Informações que aparecem na parte inferior ao passar o mouse */
+        .overflow-info {
+            position: absolute;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            width: 100%;
+            padding: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
 
-if __name__ == "__main__":
-	criar_banco()
+        .card-animal:hover .overflow-info {
+            opacity: 1;
+        }
 
+        /* Contêiner para os botões de ação (Arquivar/Excluir) */
+        .opcoes-hover {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: none; /* Escondido por padrão */
+            flex-direction: column;
+            gap: 5px;
+            z-index: 10; /* Garante que fique sobre a imagem */
+        }
 
-import sqlite3
-conn = sqlite3.connect("animais.db")
-cursor = conn.cursor()
-cursor.execute("DELETE FROM animais WHERE nome='lua'")
-conn.commit()
-cursor.execute("SELECT * FROM animais")
-print(cursor.fetchall())
-conn.close()
+        /* Mostra os botões quando o mouse está sobre o card */
+        .card-animal:hover .opcoes-hover {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="container mt-4">
+    <h2 class="mb-4">
+        {% if perfil_nome %}
+            Animais de {{ perfil_nome }}
+        {% else %}
+            Galeria dos Meus Animais
+        {% endif %}
+    </h2>
+    {% if 'usuario_id' in session %}
+        <a href="{{ url_for('explorar') }}" class="btn btn-outline-primary mb-4">🌍 Explorar</a>
+        <a href="/logout" class="btn btn-outline-secondary mb-4 ms-2">logout</a>
+        <a href="/adicionar" class="btn btn-outline-secondary mb-4 ms-2">Cadastrar Novo Animal</a>
+        <a href="/arquivados" class="btn btn-outline-secondary mb-4 ms-2">Ver Arquivados</a>
+    {% else %}
+        <a href="/login" class="btn btn-outline-secondary mb-4 ms-2" >Login</a>
+        <a href="/registrar" class="btn btn-outline-secondary mb-4 ms-2">Registrar</a>
+    {% endif %}
+    {% if nomes|length > 1 %}
+        <div class="mb-4">
+            <a href="/" class="btn btn-secondary btn-sm">Todos</a>
+            {% for nome in nomes %}
+                <a href="{{ url_for('filtro_por_nome', nome=nome) }}" class="btn btn-primary btn-sm">{{ nome }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
 
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+        {% for animal in animais %}
+        <div class="col">
+            <div class="card-animal border rounded shadow-sm">
+                
+                <!-- Botões visíveis ao passar o mouse -->
+                <div class="opcoes-hover">
+                    <!-- CONDIÇÃO CORRIGIDA: Usa o índice 8 para o ID do dono do animal, conforme indicado. -->
+                    {% if 'usuario_id' in session and session['usuario_id']|string == animal[8]|string %}
+                        <a href="{{ url_for('arquivar', id=animal[0]) }}" class="btn btn-warning btn-sm">Arquivar</a>
+                        <a href="{{ url_for('excluir', id=animal[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
+                    {% endif %}
+                </div>
 
-import sqlite3
-conn = sqlite3.connect("animais.db")
-cursor = conn.cursor()
-cursor.execute("ALTER TABLE animais ADD COLUMN arquivado INTERGER default 0;")
-conn.commit()
-"""
-
-import sqlite3
-
-def criar_banco():
-    conn = sqlite3.connect('animais.db')  # usa o mesmo banco do projeto
-    cursor = conn.cursor()
-
-    # Cria tabela de usuários
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS usuarios (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            nome TEXT NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            senha TEXT NOT NULL,
-            apelido TEXT NOT NULL
-        )
-    ''')
-
-    # Tenta adicionar o campo usuario_id à tabela animais
-    try:
-        cursor.execute("ALTER TABLE animais ADD COLUMN usuario_id INTEGER")
-    except sqlite3.OperationalError:
-        pass  # Campo já existe
-
-    conn.commit()
-    conn.close()
-    print("Banco atualizado com sucesso!")
-
-if __name__ == "__main__":
-    criar_banco()
+                <img src="{{ animal[6] }}" alt="Foto do animal {{ animal[1] }}">
+                
+                <div class="overflow-info">
+                    <strong>{{ animal[1] }}</strong><br>
+                    Espécie: {{ animal[2] }}<br>
+                    Raça: {{ animal[3] }}<br>
+                    {{ animal[5] }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

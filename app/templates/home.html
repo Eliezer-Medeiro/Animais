@@ -7,8 +7,9 @@
 	<title>Galeria dos Meus Animais</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 	<style>
+		/* Estilo para o contêiner do card do animal */
 		.card-animal {
-			position: relative;
+			position: relative; /* Necessário para posicionar elementos filhos de forma absoluta */
 			overflow: hidden;
 			cursor: pointer;
 			transition: transform 0.3s;
@@ -21,10 +22,12 @@
 			transition: transform 0.3s;
 		}
 
+		/* Efeito de zoom na imagem ao passar o mouse */
 		.card-animal:hover img {
 			transform: scale(1.05);
 		}
 
+		/* Informações que aparecem na parte inferior ao passar o mouse */
 		.overflow-info {
 			position: absolute;
 			bottom: 0;
@@ -40,16 +43,18 @@
 			opacity: 1;
 		}
 
+		/* Contêiner para os botões de ação (Arquivar/Excluir) */
 		.opcoes-hover {
 			position: absolute;
 			top: 10px;
 			right: 10px;
-			display: none;
+			display: none; /* Escondido por padrão */
 			flex-direction: column;
 			gap: 5px;
-			z-index: 1;
+			z-index: 10; /* Garante que fique sobre a imagem */
 		}
 
+		/* Mostra os botões quando o mouse está sobre o card */
 		.card-animal:hover .opcoes-hover {
 			display: flex;
 		}
@@ -63,10 +68,15 @@
 			Galeria dos Meus Animais
 		{% endif %}
 	</h2>
-	<a href="/adicionar" class="btn btn-success mb-4">Cadastrar Novo Animal</a>
-	<a href="/arquivados" class="btn btn-outline-secondary mb-4 ms-2">Ver Arquivados</a>
-	<a href="/login" class="btn btn-outline-secondary mb-4 ms-2" >Login</a>
-	<a href="/registrar" class="btn btn-outline-secondary mb-4 ms-2">Registrar</a>
+	{% if 'usuario_id' in session %}
+		<a href="{{ url_for('explorar') }}" class="btn btn-outline-primary mb-4">🌍 Explorar</a>
+    	<a href="/logout" class="btn btn-outline-secondary mb-4 ms-2">logout</a>
+		<a href="/adicionar" class="btn btn-outline-secondary mb-4 ms-2">Cadastrar Novo Animal</a>
+		<a href="/arquivados" class="btn btn-outline-secondary mb-4 ms-2">Ver Arquivados</a>
+	{% else %}
+		<a href="/login" class="btn btn-outline-secondary mb-4 ms-2" >Login</a>
+		<a href="/registrar" class="btn btn-outline-secondary mb-4 ms-2">Registrar</a>
+	{% endif %}
 	{% if nomes|length > 1 %}
 		<div class="mb-4">
 			<a href="/" class="btn btn-secondary btn-sm">Todos</a>
@@ -82,12 +92,15 @@
 			<div class="card-animal border rounded shadow-sm">
 				
 				<!-- Botões visíveis ao passar o mouse -->
-				<div class="opcoes-hover">
-					{% if session["usuario_id"] == animal[7] %}
+				{% if 'usuario_id' in session %}
+					<div class="opcoes-hover">
+						<!-- NOTA DE DIAGNÓSTICO: A condição 'if' foi removida temporariamente. -->
+						<!-- Se os botões aparecerem agora, o problema está na sua lógica de sessão/dados. -->
+						<!-- Verifique se 'session["usuario_id"]' e 'animal[7]' contêm os valores esperados. -->
 						<a href="{{ url_for('arquivar', id=animal[0]) }}" class="btn btn-warning btn-sm">Arquivar</a>
 						<a href="{{ url_for('excluir', id=animal[0]) }}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
-					{% endif %}
-				</div>
+					</div>
+				{% endif %}
 
 				<img src="{{ animal[6] }}" alt="Foto do animal {{ animal[1] }}">
 				
