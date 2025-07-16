@@ -1,5 +1,6 @@
 from app import app
 from flask import render_template, url_for, request, redirect, session, flash, make_response
+from werkzeug.utils import secure_filename
 import sqlite3
 import os
 
@@ -126,7 +127,25 @@ def adicionar():
         raca = request.form["raca"]
         nascimento = request.form["nascimento"]
         descricao = request.form["descricao"]
-        foto = request.form["foto"]
+
+        # Verifica se o arquivo foi enviado
+        if "foto" not in request.files:
+            flash("Nenhuma imagem enviada.")
+            return redirect("/adicionar")
+
+        imagem = request.files["foto"]
+
+        if imagem.filename == "":
+            flash("Nome de arquivo vazio.")
+            return redirect("/adicionar")
+
+        # Salva o arquivo
+        nome_arquivo = secure_filename(imagem.filename)
+        caminho_arquivo = os.path.join("static", "imagens", nome_arquivo)
+        imagem.save(caminho_arquivo)
+
+        # Caminho salvo no banco
+        foto = f"/static/imagens/{nome_arquivo}"
         usuario_id = session["usuario_id"]
 
         conn = sqlite3.connect(CAMINHO_BANCO)
@@ -248,3 +267,21 @@ def explorar():
     conn.close()
 
     return render_template("explorar.html", animais=animais)
+
+
+
+@app.route("/buscar", methods=["POST"])
+def buscar_usuario():
+    apelido = request.form.get("apelido")
+
+    conn = sqlite3.connect(CAMINHO_BANCO)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM usuarios WHERE apelido = ?", (apelido,))
+    resultado = cursor.fetchone()
+    conn.close()
+
+    if resultado:
+        return redirect(f"/perfil/{apelido}")
+    else:
+        flash("Usuário não encontrado.")
+        return redirect(request.referrer or "/")

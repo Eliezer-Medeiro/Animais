@@ -8,7 +8,7 @@
 </head>
 <body class="container mt-5">
 	<h2>Cadastro de Animal</h2>
-	<form method="POST" action="/adicionar">
+	<form method="POST" action="/adicionar" enctype="multipart/form-data">
 		<div class="mb-3">
 			<label>Nome:</label>
 			<input class="form-control" type="text" name="nome" required>
@@ -30,8 +30,8 @@
 			<textarea class="form-control" name="descricao" rows="3"></textarea>
 		</div>
 		<div class="mb-3">
-			<label>Foto (link da imagem):</label>
-			<input class="form-control" type="text" name="foto" required>
+			<label>Foto (arquivo local):</label>
+			<input class="form-control" type="file" name="foto" accept="image/*" required>
 		</div>
 		<button class="btn btn-success" type="submit">Salvar</button>
 		<a class="btn btn-secondary" href="/"></a>

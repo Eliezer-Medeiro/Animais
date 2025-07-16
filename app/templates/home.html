@@ -61,6 +61,10 @@
 	</style>
 </head>
 <body class="container mt-4">
+	<form method="POST" action="/buscar" class="d-flex mb-4" role="search">
+  		<input class="form-control me-2" type="search" name="apelido" placeholder="Buscar perfil" aria-label="Buscar" required>
+ 	<button class="btn btn-outline-primary" type="submit">Buscar</button>
+	</form>
 	<h2 class="mb-4">
 		{% if perfil_nome %}
 			Animais de {{ perfil_nome }}

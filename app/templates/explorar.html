@@ -15,6 +15,10 @@
 <body class="bg-light">
     <div class="container py-4">
         <h1 class="mb-4">Galeria Pública</h1>
+            <form method="POST" action="/buscar" class="d-flex mb-4" role="search">
+                <input class="form-control me-2" type="search" name="apelido" placeholder="Buscar perfil" aria-label="Buscar" required>
+                <button class="btn btn-outline-primary" type="submit">Buscar</button>
+            </form>
 
         <a href="{{ url_for('perfil', apelido=session.get('usuario_apelido', '')) }}" class="btn btn-secondary mb-4">
             ← Voltar para meu perfil
